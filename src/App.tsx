@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Navbar } from "./components/Navbar";
+import { CreatePoll } from "./components/CreatePoll";
 
 function App() {
   const [componentVisibility, setComponentVisibility] = useState({
@@ -50,7 +51,9 @@ function App() {
   return (
     <div className="w-screen h-screen flex flex-col">
       <Navbar setComponentVisibility={onNavbarClick} />
-      <main className="flex-grow bg-red-50">Content</main>
+      <main className="flex-grow bg-red-50 p-4">
+        <CreatePoll />
+      </main>
     </div>
   );
 }
