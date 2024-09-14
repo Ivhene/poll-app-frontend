@@ -1,13 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { Navbar } from "./components/Navbar";
 import { CreatePoll } from "./components/CreatePoll";
+import { VoteOnPoll } from "./components/VoteOnPoll";
+import { CreateUser } from "./components/CreateUser";
 
 function App() {
   const [componentVisibility, setComponentVisibility] = useState({
     createPoll: false,
     voteOnPoll: false,
-    createUser: false,
   });
+  const [user, setUser] = useState("");
+
+  function loginUser(user: string) {
+    setUser(user);
+  }
 
   function onNavbarClick(componentIdentifier: string) {
     switch (componentIdentifier) {
@@ -15,33 +21,21 @@ function App() {
         setComponentVisibility({
           createPoll: true,
           voteOnPoll: false,
-          createUser: false,
         });
         break;
       case "vote":
         setComponentVisibility({
           createPoll: false,
           voteOnPoll: true,
-          createUser: false,
-        });
-        break;
-      case "user":
-        setComponentVisibility({
-          createPoll: false,
-          voteOnPoll: false,
-          createUser: true,
         });
         break;
       default:
         setComponentVisibility({
           createPoll: false,
           voteOnPoll: false,
-          createUser: false,
         });
         break;
     }
-
-    console.log(componentVisibility);
   }
 
   useEffect(() => {
@@ -50,9 +44,11 @@ function App() {
 
   return (
     <div className="w-screen h-screen flex flex-col">
-      <Navbar setComponentVisibility={onNavbarClick} />
-      <main className="flex-grow bg-red-50 p-4">
-        <CreatePoll />
+      <Navbar user={user} setComponentVisibility={onNavbarClick} />
+      <main className="flex-grow bg-neutral-50 p-4">
+        {user === "" && <CreateUser loginUser={loginUser} />}
+        {user !== "" && componentVisibility.createPoll && <CreatePoll />}
+        {user !== "" && componentVisibility.voteOnPoll && <VoteOnPoll />}
       </main>
     </div>
   );
