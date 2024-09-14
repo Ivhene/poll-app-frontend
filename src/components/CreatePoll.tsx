@@ -1,4 +1,6 @@
 import React, { useState, ChangeEvent, FormEvent } from "react";
+import { Poll, User } from "../lib/types";
+import { createPoll, generateId } from "../lib/API";
 
 // Define the structure of the form data
 interface FormData {
@@ -7,7 +9,11 @@ interface FormData {
   options: string[];
 }
 
-export const CreatePoll: React.FC = () => {
+interface CreatePollProps {
+  user: User;
+}
+
+export const CreatePoll = ({ user }: CreatePollProps) => {
   // Form state
   const [question, setQuestion] = useState<string>("");
   const [validUntil, setValidUntil] = useState<string>("");
@@ -26,17 +32,36 @@ export const CreatePoll: React.FC = () => {
   };
 
   // Handle form submission
-  const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Creating the final data structure
-    const formData: FormData = {
-      question,
-      validUntil: new Date(validUntil).toISOString(), // Convert to ISO 8601 format
-      options: options.filter((option) => option.trim() !== ""), // Filter out any empty options
+    // Format date without milliseconds
+    const publishedAt = new Date(Date.now()).toISOString().split(".")[0] + "Z";
+    const validUntilFormatted =
+      new Date(validUntil).toISOString().split(".")[0] + "Z";
+
+    let newPoll: Poll = {
+      id: generateId(),
+      question: question,
+      publishedAt: publishedAt,
+      validUntil: validUntilFormatted,
+      createdUser: user,
+      options: options
+        .filter((option) => option.trim() !== "")
+        .map((option, index) => {
+          return {
+            id: generateId(),
+            caption: option,
+            presentationOrder: index,
+            poll: null,
+            votes: [],
+          };
+        }),
     };
 
-    console.log(JSON.stringify(formData, null, 2));
+    newPoll = await createPoll(newPoll);
+
+    console.log(JSON.stringify(newPoll, null, 2));
 
     // Here you would typically send `formData` to the server
   };

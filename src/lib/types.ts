@@ -7,7 +7,7 @@ export type User = {
 
 export type Vote = {
   id: string;
-  publishedAt: Date;
+  publishedAt: string;
   user: User;
   voteOption: VoteOption;
 };
@@ -15,8 +15,8 @@ export type Vote = {
 export type Poll = {
   id: string;
   question: string;
-  publishedAt: Date;
-  validUntil: Date;
+  publishedAt: string;
+  validUntil: string;
   createdUser: User;
   options: VoteOption[];
 };
@@ -25,6 +25,6 @@ export type VoteOption = {
   id: string;
   caption: string;
   presentationOrder: number;
-  poll: Poll;
+  poll: Poll | null;
   votes: Vote[];
 };

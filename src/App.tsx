@@ -3,15 +3,21 @@ import { Navbar } from "./components/Navbar";
 import { CreatePoll } from "./components/CreatePoll";
 import { VoteOnPoll } from "./components/VoteOnPoll";
 import { CreateUser } from "./components/CreateUser";
+import { User } from "./lib/types";
 
 function App() {
   const [componentVisibility, setComponentVisibility] = useState({
     createPoll: false,
     voteOnPoll: false,
   });
-  const [user, setUser] = useState("");
+  const [user, setUser] = useState<User>({
+    username: "",
+    email: "",
+    votes: [],
+    polls: [],
+  });
 
-  function loginUser(user: string) {
+  function loginUser(user: User) {
     setUser(user);
   }
 
@@ -44,11 +50,15 @@ function App() {
 
   return (
     <div className="w-screen h-screen flex flex-col">
-      <Navbar user={user} setComponentVisibility={onNavbarClick} />
+      <Navbar user={user.username} setComponentVisibility={onNavbarClick} />
       <main className="flex-grow bg-neutral-50 p-4">
-        {user === "" && <CreateUser loginUser={loginUser} />}
-        {user !== "" && componentVisibility.createPoll && <CreatePoll />}
-        {user !== "" && componentVisibility.voteOnPoll && <VoteOnPoll />}
+        {user.username === "" && <CreateUser loginUser={loginUser} />}
+        {user.username !== "" && componentVisibility.createPoll && (
+          <CreatePoll user={user} />
+        )}
+        {user.username !== "" && componentVisibility.voteOnPoll && (
+          <VoteOnPoll />
+        )}
       </main>
     </div>
   );

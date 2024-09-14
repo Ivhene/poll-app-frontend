@@ -1,7 +1,9 @@
 import React, { useState } from "react";
+import { createUser } from "../lib/API";
+import { User } from "../lib/types";
 
 interface CreateUserProps {
-  loginUser: (user: string) => void;
+  loginUser: (user: User) => void;
 }
 
 export const CreateUser = ({ loginUser }: CreateUserProps) => {
@@ -10,7 +12,7 @@ export const CreateUser = ({ loginUser }: CreateUserProps) => {
   const [email, setEmail] = useState<string>("");
 
   // Handle form submission
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     // Simple validation (you can enhance this)
@@ -20,13 +22,17 @@ export const CreateUser = ({ loginUser }: CreateUserProps) => {
     }
 
     // Create user object (this is where you could send data to a server)
-    const newUser = {
-      username,
-      email,
+    let newUser = {
+      username: username,
+      email: email,
+      votes: [],
+      polls: [],
     };
 
+    newUser = await createUser(newUser);
+
     console.log("New user created:", newUser);
-    loginUser(newUser.username);
+    loginUser(newUser);
 
     // Clear the form after submission
     setUsername("");
