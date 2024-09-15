@@ -1,7 +1,7 @@
 import { Poll, User, Vote } from "./types";
 
-const url = "http://localhost:8080";
-// const url = "";
+// const url = "http://localhost:8080"; // during coding
+const url = ""; // in build
 
 // Function to create a user by making a POST request
 export async function createUser(user: User) {
