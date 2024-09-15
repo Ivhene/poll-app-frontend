@@ -1,33 +1,43 @@
 import React, { useState } from "react";
+import { Poll, User, Vote } from "../lib/types";
+import { castVote, generateId } from "../lib/API";
 
-interface PollOption {
-  id: number;
-  text: string;
+interface VoteOnPoll {
+  poll: Poll;
+  user: User;
 }
 
-export const VoteOnPoll: React.FC = () => {
+export const VoteOnPoll = ({ poll, user }: VoteOnPoll) => {
   // Poll question and options
-  const [question, setQuestion] = useState<string>(
-    "What is your favorite color?"
-  );
-  const [options, setOptions] = useState<PollOption[]>([
-    { id: 1, text: "Red" },
-    { id: 2, text: "Green" },
-    { id: 3, text: "Blue" },
-  ]);
-  const [selectedOption, setSelectedOption] = useState<number | null>(null);
+  const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
   // Handle radio option selection
   const handleOptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedOption(parseInt(e.target.value));
+    setSelectedOption(e.target.value);
   };
 
   // Handle form submission
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (selectedOption !== null) {
       console.log(`Selected option: ${selectedOption}`);
-      // Here you could send the selected option to a server
+
+      let vote: Vote = {
+        id: generateId(),
+        publishedAt: new Date(Date.now()).toISOString().split(".")[0] + "Z",
+        user: user,
+        voteOption: poll.options.find(
+          (option) => option.id === selectedOption
+        ) ?? {
+          id: "-1",
+          caption: "",
+          presentationOrder: -1,
+          poll: null,
+          votes: [],
+        },
+      };
+
+      vote = await castVote(vote, poll.id);
     } else {
       console.log("No option selected");
     }
@@ -35,9 +45,9 @@ export const VoteOnPoll: React.FC = () => {
 
   return (
     <div>
-      <h2>{question}</h2>
+      <h2>{poll.question}</h2>
       <form onSubmit={handleSubmit}>
-        {options.map((option) => (
+        {poll.options.map((option) => (
           <div key={option.id}>
             <input
               type="radio"
@@ -48,7 +58,7 @@ export const VoteOnPoll: React.FC = () => {
               onChange={handleOptionChange}
               required
             />
-            <label htmlFor={`option-${option.id}`}>{option.text}</label>
+            <label htmlFor={`option-${option.id}`}>{option.caption}</label>
           </div>
         ))}
         <button

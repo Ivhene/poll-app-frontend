@@ -4,6 +4,7 @@ import { CreatePoll } from "./components/CreatePoll";
 import { VoteOnPoll } from "./components/VoteOnPoll";
 import { CreateUser } from "./components/CreateUser";
 import { User } from "./lib/types";
+import { PollList } from "./components/PollList";
 
 function App() {
   const [componentVisibility, setComponentVisibility] = useState({
@@ -57,7 +58,7 @@ function App() {
           <CreatePoll user={user} />
         )}
         {user.username !== "" && componentVisibility.voteOnPoll && (
-          <VoteOnPoll />
+          <PollList user={user} />
         )}
       </main>
     </div>
